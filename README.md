@@ -195,6 +195,6 @@ sudo ufw status verbose
 ### Check the Load Balancer: Enter the IP address of the load balancer in your browser. The load balancer should route traffic to one of your web servers and refresh to show a different web server.
 
 
-##Conclusion
+## Conclusion
 
 Congratulations! You have successfully set up two Nginx web servers, configured a load balancer to distribute traffic, and ensured your system information is generated regularly by a systemd timer. Your setup is now scalable and can handle traffic efficiently.
