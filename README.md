@@ -149,24 +149,24 @@ sudo systemctl status generate_index.servicer
 
 ## Setting Up Nginx
 
-## 1. Copy Configuration Files: Copy the nginx.conf and default.conf files to their respective locations:
+### 1. Copy Configuration Files: Copy the nginx.conf and default.conf files to their respective locations:
 ```bash
 sudo cp /home/user/assignment3p2/nginx.conf /etc/nginx
 sudo cp /home/user/assignment3p2/default.conf /etc/nginx/sites-available
 ```
 
-## 2. CCreate a Symbolic Link: Create a symbolic link for Nginx:
+### 2. CCreate a Symbolic Link: Create a symbolic link for Nginx:
 ```bash
 sudo ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 ```
 
-## 3. Enable and Start Nginx:
+### 3. Enable and Start Nginx:
 ```bash
 sudo systemctl start nginx
 sudo systemctl enable nginx
 ```
 
-## 4. Check the Status of Nginx:
+### 4. Check the Status of Nginx:
 ```bash
 sudo systemctl status nginx
 sudo nginx -t
@@ -174,7 +174,7 @@ sudo nginx -t
 
 ## Setting Up UFW
 
-## 1. Enable UFW:
+### 1. Enable UFW:
 ```bash
 sudo systemctl enable --now ufw.service
 sudo ufw allow ssh
@@ -182,198 +182,18 @@ sudo ufw allow http
 sudo ufw enable
 ```
 
-## 2. Check the UFW Status:
+### 2. Check the UFW Status:
 ```bash
 sudo ufw status verbose
 ```
-
 ## Checking the Servers, Documents, and Load Balancer
 
-    Access the Web Servers: Open a web browser and enter the IP addresses of your web servers. You should see the generated index.html page from each server.
+### Access the Web Servers: Open a web browser and enter the IP addresses of your web servers. You should see the generated index.html page from each server.
 
-    Check the Documents: Navigate to http://<your-ip>/documents to see the documents directory being served by Nginx.
+### Check the Documents: Navigate to http://<your-ip>/documents to see the documents directory being served by Nginx.
 
-    Check the Load Balancer: Enter the IP address of the load balancer in your browser. The load balancer should route traffic to one of your web servers and refresh to show a different web server.
+### Check the Load Balancer: Enter the IP address of the load balancer in your browser. The load balancer should route traffic to one of your web servers and refresh to show a different web server.
 
-2420 Assignment 3-2: Setting Up a Load Balancer on DigitalOcean
-Table of Contents
-
-    Create the Nginx Web Servers
-    Create the Load Balancer
-
-Create the Nginx Web Servers
-Overview
-
-In this section, you will create two identical Nginx web server droplets on DigitalOcean. These droplets will serve an HTML page with system information and will later be integrated into a load balancer to distribute traffic.
-Prerequisites
-
-Before you start setting up the web servers, ensure that:
-
-    You have access to a DigitalOcean account.
-    You are familiar with creating and managing droplets.
-    Your system is running Arch Linux. If not, update it:
-
-    sudo pacman -Syu
-    sudo reboot
-
-Steps to Set Up the Nginx Web Servers
-
-    Create Two Droplets:
-        In DigitalOcean, create two new droplets. During creation, assign both droplets the same tag (e.g., web). This tag will be used later when we configure the load balancer.
-
-    Ensure Your Droplets Are Updated:
-        After logging into each droplet, update the system:
-
-    sudo pacman -Syu
-    sudo reboot
-
-Set Up Nginx Web Server:
-
-    Follow the steps in the README.md file to install Nginx. This includes:
-        Installing Nginx and UFW firewall:
-
-        sudo pacman -S nginx ufw
-
-Copy Configuration Files:
-
-    Copy your nginx.conf and default.conf files to the appropriate directories:
-
-    sudo cp /home/user/assignment3p2/nginx.conf /etc/nginx/
-    sudo cp /home/user/assignment3p2/default.conf /etc/nginx/sites-available/
-
-Enable and Start Nginx:
-
-    Enable and start the Nginx service:
-
-    sudo systemctl start nginx
-    sudo systemctl enable nginx
-
-Check Nginx Status:
-
-    Confirm that Nginx is running:
-
-    sudo systemctl status nginx
-
-Configure UFW Firewall:
-
-    Enable and configure UFW to allow HTTP traffic:
-
-        sudo ufw allow ssh
-        sudo ufw allow http
-        sudo ufw enable
-
-Create the Load Balancer
-Overview
-
-Now that the Nginx web servers are set up, we can create a load balancer on DigitalOcean to distribute incoming traffic between the two servers.
-Steps to Set Up the Load Balancer
-
-    Create the Load Balancer on DigitalOcean:
-        Go to the Load Balancers section in your DigitalOcean dashboard.
-        Choose the Regional Load Balancer option.
-        Select the datacenter region that your web servers are located in (e.g., San Francisco 3).
-        Set the Network Visibility to External (Public).
-        Provide a name for the load balancer (optional).
-
-    Configure the Load Balancer:
-        Tagging: When configuring the load balancer, use the same tag (web) that you assigned to your web server droplets.
-        Once configured, click Create Load Balancer.
-
-    Test the Load Balancer:
-        Once the load balancer is ready, enter its public IP address in your browser. The load balancer will route traffic to one of your web servers, and you should see the system information page that was generated by the generate_index script.
-
-    Verify Load Balancer Operation:
-        Refresh the page to see the IP addresses of the web servers change. This indicates that the load balancer is functioning correctly, distributing traffic between the two web servers.
-
-Setting Up System User and Directory Structure
-Create a System User:
-
-    Run the following command to create a new system user for the webgen process:
-
-    sudo useradd -r -d /var/lib/webgen -s /usr/sbin/nologin webgen
-
-Create the Directory Structure:
-
-    Set up the directory structure:
-
-sudo mkdir -p /var/lib/webgen/bin /var/lib/webgen/HTML /var/lib/webgen/documents
-
-Copy the generate_index Script: Copy the generate_index script to the /var/lib/webgen/bin directory:
-
-sudo cp /home/user/assignment3p2/2420-as3-p2-start/generate_index /var/lib/webgen/bin
-
-Set Permissions: Change the ownership and make the script executable:
-
-    sudo chown -R webgen:webgen /var/lib/webgen
-    sudo chmod u+x,g+x /var/lib/webgen/bin/generate_index
-
-Setting Up the Systemd Timer and Service
-Copy the Timer and Service Files:
-
-    Copy the generate_index.service and generate_index.timer files to the /etc/systemd/system directory:
-
-sudo cp /home/user/assignment3p2/generate_index.{service,timer} /etc/systemd/system
-
-Reload the systemd configuration:
-
-sudo systemctl daemon-reload
-
-Enable and start the timer:
-
-sudo systemctl enable generate_index.timer
-sudo systemctl start generate_index.timer
-
-Verify the Timer and Service:
-
-    Check when the timer will run next:
-
-systemctl list-timers --all | grep generate_index.timer
-
-Check if the service ran successfully:
-
-        sudo systemctl status generate_index.service
-
-Setting Up Nginx
-
-    Copy Configuration Files: Copy the nginx.conf and default.conf files to their respective locations:
-
-sudo cp /home/user/assignment3p2/nginx.conf /etc/nginx
-sudo cp /home/user/assignment3p2/default.conf /etc/nginx/sites-available
-
-Create a Symbolic Link: Create a symbolic link for Nginx:
-
-sudo ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
-
-Enable and Start Nginx:
-
-sudo systemctl start nginx
-sudo systemctl enable nginx
-
-Check the Status of Nginx:
-
-    sudo systemctl status nginx
-    sudo nginx -t
-
-Setting Up UFW
-
-    Enable UFW:
-
-sudo systemctl enable --now ufw.service
-sudo ufw allow ssh
-sudo ufw allow http
-sudo ufw enable
-
-Check the UFW Status:
-
-    sudo ufw status verbose
-
-Checking the Servers, Documents, and Load Balancer
-
-    Access the Web Servers: Open a web browser and enter the IP addresses of your web servers. You should see the generated index.html page from each server.
-
-    Check the Documents: Navigate to http://<your-ip>/documents to see the documents directory being served by Nginx.
-
-    Check the Load Balancer: Enter the IP address of the load balancer in your browser. The load balancer should route traffic to one of your web servers and refresh to show a different web server.
 
 ##Conclusion
 
